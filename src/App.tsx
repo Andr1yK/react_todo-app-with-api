@@ -1,5 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import { Todo } from './types/Todo';
 import {
   deleteTodo,
@@ -14,6 +18,7 @@ import { Footer } from './components/Footer';
 import { FilterType } from './types/FilterType';
 import { Header } from './components/Header';
 import { Loader } from './components/Loader';
+import { useLoadingTodos } from './hooks/useLoadingTodos';
 
 const USER_ID = 6616;
 
@@ -23,30 +28,14 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [disabledInput, setDisabledInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [isLoading, setIsLoading] = useState(true);
 
-  const addLoadingTodo = useCallback((id: number) => {
-    setLoadingIds(state => {
-      state.add(id);
-
-      return new Set(state);
-    });
-  }, []);
-
-  const removeLoadingTodo = useCallback((id: number) => {
-    setLoadingIds(state => {
-      state.delete(id);
-
-      return new Set(state);
-    });
-  }, []);
-
-  const isTodoLoading = useCallback(
-    (id: number) => loadingIds.has(id),
-    [loadingIds],
-  );
+  const {
+    add: addLoadingTodo,
+    remove: removeLoadingTodo,
+    isLoading: isTodoLoading,
+  } = useLoadingTodos();
 
   const removeError = () => {
     setErrorMessage(Error.None);
